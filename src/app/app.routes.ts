@@ -1,3 +1,10 @@
 import { Routes } from '@angular/router';
+import { FormsComponent } from './forms/forms.component';
+import { SuccessComponent } from './success/success.component';
 
-export const routes: Routes = [];
+const routeConfig: Routes = [
+    { path: '', component: FormsComponent, title: "Form | Abdurrahman Abdulsalam" },
+    { path: 'success', component: SuccessComponent, title: 'Success | Abdurrahman Abdulsalam' }
+];
+
+export default routeConfig;
