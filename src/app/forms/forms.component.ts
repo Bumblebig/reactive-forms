@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
@@ -15,8 +15,10 @@ import { NgxSemanticModule } from 'ngx-semantic';
   styleUrls: ['./forms.component.css']
 })
 export class FormsComponent implements OnInit {
-  form!: FormGroup;
+  form: FormGroup;
   countries: any[] = [];
+  isFormValid: boolean = false;
+
   occupations = [
     { text: 'Frontend Developer', value: 'Frontend' },
     { text: 'Backend Developer', value: 'Backend' },
@@ -24,36 +26,27 @@ export class FormsComponent implements OnInit {
     { text: 'Devops Engineer', value: 'Devops Engineer' },
   ];
 
-  constructor(
-    private router: Router,
-    private http: HttpClient,
-    private fb: FormBuilder,
-    private toastr: ToastrService
-  ) {
-    this.initializeForm();
-  }
-
-  ngOnInit() {
-    this.fetchDetails();
-  }
-
-  private initializeForm() {
+  constructor(private router: Router, private http: HttpClient, private fb: FormBuilder, private toastr: ToastrService) {
     this.form = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(/^(?=.*[A-Z])(?=.*\W).+$/),
-        ],
-      ],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\W).+$/)
+      ]],
       phone: ['', Validators.required],
       country: ['', Validators.required],
       occupation: ['', Validators.required],
-      successful: ['', Validators.required],
+      successful: ['', Validators.required]
+    });
+  }
+
+  ngOnInit() {
+    this.fetchDetails();
+    this.form.valueChanges.subscribe(() => {
+      this.isFormValid = this.form.valid;
     });
   }
 
@@ -63,7 +56,7 @@ export class FormsComponent implements OnInit {
         this.countries = resp
           .map((country: any) => ({
             text: country.name.common,
-            value: country.cca2,
+            value: country.cca2
           }))
           .sort((a: any, b: any) => a.text.localeCompare(b.text));
       },
@@ -90,7 +83,7 @@ export class FormsComponent implements OnInit {
     }
   }
 
-  getControl(controlName: string): AbstractControl | null {
+  getControl(controlName: string) {
     return this.form.get(controlName);
   }
 }
